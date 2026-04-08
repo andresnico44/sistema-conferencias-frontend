@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
     return (
@@ -10,10 +11,15 @@ const Home = () => {
                 La plataforma líder para descubrir, organizar y asistir a las mejores conferencias del mundo.
             </p>
             <div className="flex space-x-4">
-                {/* Usaremos botones falsos aquí solo para que se vea bien en el inicio */}
-                <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+
+                {/* 2. Cambiamos <button> por <Link> y añadimos to="/conferencias" */}
+                <Link
+                    to="/conferencias"
+                    className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+                >
                     Explorar Conferencias
-                </button>
+                </Link>
+
             </div>
         </div>
     );

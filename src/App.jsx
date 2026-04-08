@@ -18,7 +18,7 @@ function App() {
                     <Route path="/" element={<Home />} />
 
                     {/* Cuando la ruta es "/login", muestra el Login */}
-                    <Route path="/login" element={<Login />} />
+                    <Route path="/iniciar-sesion" element={<Login />} />
                     <Route path="/registro" element={<Registro />} />
                     <Route path="/conferencias" element={<Conferencias />} />
                     <Route path="/conferencia/:id" element={<LandingConferencia />} />

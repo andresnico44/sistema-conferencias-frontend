@@ -23,8 +23,7 @@ const Registro = () => {
                                 <input
                                     type="text"
                                     placeholder="Ej. Andrés"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-                                    disabled
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 />
                             </div>
                             <div className="w-full md:w-1/2">
@@ -32,8 +31,7 @@ const Registro = () => {
                                 <input
                                     type="text"
                                     placeholder="Ej. Niño"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-                                    disabled
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 />
                             </div>
                         </div>
@@ -45,8 +43,7 @@ const Registro = () => {
                                 <input
                                     type="email"
                                     placeholder="tu@correo.com"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-                                    disabled
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 />
                             </div>
                             <div className="w-full md:w-1/2">
@@ -54,8 +51,7 @@ const Registro = () => {
                                 <input
                                     type="tel"
                                     placeholder="+57 300 000 0000"
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-                                    disabled
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                                 />
                             </div>
                         </div>
@@ -66,8 +62,7 @@ const Registro = () => {
                             <input
                                 type="password"
                                 placeholder="Mínimo 8 caracteres"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
-                                disabled
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
                             />
                         </div>
 
@@ -75,8 +70,7 @@ const Registro = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de cuenta</label>
                             <select
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed text-gray-500"
-                                disabled
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-500"
                             >
                                 <option>Asistente</option>
                                 <option>Ponente / Speaker</option>
@@ -86,7 +80,7 @@ const Registro = () => {
 
                         {/* Checkbox de Términos */}
                         <div className="flex items-center mt-2">
-                            <input type="checkbox" className="h-4 w-4 text-indigo-600 border-gray-300 rounded cursor-not-allowed" disabled />
+                            <input type="checkbox" className="h-4 w-4 text-indigo-600" />
                             <label className="ml-2 block text-sm text-gray-600">
                                 Acepto los <a href="#" className="text-indigo-600 hover:underline">Términos y Condiciones</a>
                             </label>
@@ -102,7 +96,7 @@ const Registro = () => {
                     </form>
 
                     <div className="mt-6 text-center text-sm text-gray-600">
-                        ¿Ya tienes una cuenta? <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-800">Inicia sesión aquí</Link>
+                        ¿Ya tienes una cuenta? <Link to="/iniciar-sesion" className="font-semibold text-indigo-600 hover:text-indigo-800">Inicia sesión aquí</Link>
                     </div>
                 </div>
 

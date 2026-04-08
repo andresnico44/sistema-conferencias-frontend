@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     return (
@@ -39,8 +40,7 @@ const Login = () => {
                             <input
                                 type="email"
                                 placeholder="ejemplo@correo.com"
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-gray-50 cursor-not-allowed"
-                                disabled // Deshabilitado porque es solo maquetación
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                             />
                         </div>
 
@@ -55,8 +55,7 @@ const Login = () => {
                             <input
                                 type="password"
                                 placeholder="••••••••"
-                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-gray-50 cursor-not-allowed"
-                                disabled
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                             />
                         </div>
 
@@ -70,7 +69,7 @@ const Login = () => {
                     </div>
 
                     <div className="mt-8 text-center text-sm text-gray-600">
-                        ¿No tienes una cuenta? <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-800">Regístrate aquí</a>
+                        ¿No tienes una cuenta? <Link to="/registro" className="font-semibold text-indigo-600 hover:text-indigo-800">Regístrate aquí</Link>
                     </div>
                 </div>
 

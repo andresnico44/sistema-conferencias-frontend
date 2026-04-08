@@ -24,7 +24,7 @@ const Navbar = () => {
                         </Link>
 
                         {/* AQUÍ ESTÁ EL BOTÓN DE LOGIN REAL */}
-                        <Link to="/login" className="text-indigo-600 hover:text-indigo-800 px-3 py-2 text-sm font-semibold">
+                        <Link to="/iniciar-sesion" className="text-indigo-600 hover:text-indigo-800 px-3 py-2 text-sm font-semibold">
                             Iniciar Sesión
                         </Link>
 
