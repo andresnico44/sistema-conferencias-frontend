@@ -114,6 +114,14 @@ const LandingConferencia = () => {
                                 Comprar Entrada
                             </button>
 
+                            <Link to={`/editar-conferencia/${id}`} className='mt-3 block w-full bg-white border border-gray-300 text-gray-700 text-center font-bold py-3 rounded-lg hover:bg-gray-50 transition shadow-sm cursor-pointer'>
+                                Editar Conferencia
+                            </Link>
+
+                            <Link to={`/enviar-articulo/${id}`} className='mt-3 block w-full bg-white border border-gray-300 text-gray-700 text-center font-bold py-3 rounded-lg hover:bg-gray-50 transition shadow-sm cursor-pointer'>
+                                Enviar Artículo
+                            </Link>
+
                             <p className="text-xs text-center text-gray-400 mt-4">
                                 Ventas seguras procesadas a través de Stripe.
                             </p>
