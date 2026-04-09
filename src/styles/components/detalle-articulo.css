@@ -1,0 +1,250 @@
+.detalle-page {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.detalle-loading {
+  text-align: center;
+  color: #4b5563;
+}
+
+.detalle-error-wrap {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.detalle-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.detalle-back {
+  margin-bottom: 1.5rem;
+}
+
+.detalle-back-link {
+  color: #4f46e5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.detalle-back-link:hover {
+  color: #3730a3;
+}
+
+.detalle-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.detalle-header {
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+  .detalle-header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.detalle-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.detalle-id-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.detalle-estado {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid;
+}
+
+.detalle-estado--aceptado {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.detalle-estado--rechazado {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.detalle-estado--revision {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.detalle-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .detalle-title {
+    font-size: 1.875rem;
+  }
+}
+
+.detalle-conference {
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.detalle-conference span {
+  color: #4f46e5;
+}
+
+.detalle-date-block {
+  font-size: 0.875rem;
+  color: #6b7280;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .detalle-date-block {
+    text-align: right;
+  }
+}
+
+.detalle-date-value {
+  font-weight: 600;
+  color: #111827;
+}
+
+.detalle-body {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.detalle-section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.detalle-authors-box {
+  color: #374151;
+  background: #f9fafb;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #f3f4f6;
+}
+
+.detalle-abstract {
+  color: #374151;
+  line-height: 1.625;
+  text-align: justify;
+}
+
+.detalle-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+  margin-bottom: 0.75rem;
+}
+
+.detalle-file-row:last-child {
+  margin-bottom: 0;
+}
+
+.detalle-file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.detalle-file-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.detalle-file-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+.detalle-file-delete {
+  color: #dc2626;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: #ffffff;
+  border: 1px solid #fecaca;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.detalle-file-delete:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.detalle-empty {
+  color: #4b5563;
+}
+
+.detalle-eval-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detalle-eval-submit {
+  align-self: flex-start;
+  background: #4f46e5;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.detalle-eval-submit:hover {
+  background: #4338ca;
+}

@@ -13,15 +13,10 @@ import DetalleArticulo from './components/DetalleArticulo';
 
 function App() {
     return (
-        // BrowserRouter envuelve toda tu aplicación para habilitar la navegación
         <BrowserRouter>
             <Layout>
-                {/* Routes define las diferentes páginas de tu app */}
                 <Routes>
-                    {/* Cuando la ruta es "/", muestra el Home */}
                     <Route path="/" element={<Home />} />
-
-                    {/* Cuando la ruta es "/login", muestra el Login */}
                     <Route path="/iniciar-sesion" element={<Login />} />
                     <Route path="/registro" element={<Registro />} />
                     <Route path="/conferencias" element={<Conferencias />} />
