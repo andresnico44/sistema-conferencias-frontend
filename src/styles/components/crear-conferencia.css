@@ -1,0 +1,184 @@
+.crear-conferencia-container {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.crear-conferencia-header {
+  margin-bottom: 2rem;
+}
+
+.crear-conferencia-back-link {
+  color: #4f46e5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.crear-conferencia-back-link:hover {
+  color: #3730a3;
+}
+
+.crear-conferencia-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.crear-conferencia-subtitle {
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.crear-conferencia-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.crear-conferencia-alert {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid;
+}
+
+.crear-conferencia-alert-success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.crear-conferencia-alert-error {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.crear-conferencia-alert-content {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.crear-conferencia-form {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.crear-conferencia-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .crear-conferencia-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.crear-conferencia-field label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.crear-conferencia-input,
+.crear-conferencia-select,
+.crear-conferencia-textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.crear-conferencia-input:focus,
+.crear-conferencia-select:focus,
+.crear-conferencia-textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.crear-conferencia-textarea {
+  resize: none;
+}
+
+.crear-conferencia-field-help {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.crear-conferencia-checkbox-row {
+  grid-column: 1 / -1;
+}
+
+.crear-conferencia-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.crear-conferencia-checkbox-label input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  accent-color: #4f46e5;
+  cursor: pointer;
+}
+
+.crear-conferencia-actions {
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.crear-conferencia-btn {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.crear-conferencia-btn-secondary {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.crear-conferencia-btn-secondary:hover {
+  background: #f9fafb;
+}
+
+.crear-conferencia-btn-primary {
+  background: #4f46e5;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+}
+
+.crear-conferencia-btn-primary:hover {
+  background: #4338ca;
+}
+
+.crear-conferencia-btn-primary:disabled {
+  background: #a5b4fc;
+  cursor: wait;
+}

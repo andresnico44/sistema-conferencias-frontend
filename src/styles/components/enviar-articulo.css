@@ -1,0 +1,173 @@
+.enviar-page {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.enviar-header {
+  margin-bottom: 2rem;
+}
+
+.enviar-back {
+  color: #4f46e5;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.enviar-back:hover {
+  color: #3730a3;
+}
+
+.enviar-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.enviar-subtitle {
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.enviar-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  padding: 1.5rem 2rem;
+}
+
+.enviar-alert-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.enviar-alert-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.enviar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.enviar-upload-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.enviar-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 10rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background: #f9fafb;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.enviar-dropzone:hover {
+  background: #f3f4f6;
+  border-color: #6366f1;
+}
+
+.enviar-upload-svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 0.75rem;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.enviar-dropzone-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem 0 1.5rem;
+}
+
+.enviar-dropzone-hint {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.enviar-dropzone-hint strong {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.enviar-dropzone-note {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.enviar-file-input {
+  display: none;
+}
+
+.enviar-file-name {
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+.enviar-file-check {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.enviar-actions {
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.enviar-submit {
+  padding: 0.75rem 2rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  background: #4f46e5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: background 0.15s ease;
+}
+
+.enviar-submit:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.enviar-submit:disabled {
+  background: #a5b4fc;
+  cursor: wait;
+}

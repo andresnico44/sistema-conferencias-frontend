@@ -1,136 +1,168 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { apiService } from '../services/api';
+import '../styles/components/landing-conferencia.css';
 
 const LandingConferencia = () => {
-    // useParams() captura el ID de la URL (ej: /conferencia/1)
     const { id } = useParams();
+    const imagenFallback = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80';
+    const [conferencia, setConferencia] = useState(null);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState('');
+
+    const formatearFecha = (fecha) => {
+        if (!fecha) return 'Fecha por confirmar';
+        return new Date(fecha).toLocaleDateString('es-CO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    useEffect(() => {
+        const cargarDetalle = async () => {
+            setCargando(true);
+            setError('');
+            try {
+                const respuesta = await apiService.obtenerConferencias();
+                const listado = Array.isArray(respuesta) ? respuesta : (respuesta?.data || respuesta?.content || []);
+                const encontrada = listado.find((item) => String(item?.id || item?.conferenceId) === String(id));
+
+                if (!encontrada) {
+                    throw new Error('No se encontró la conferencia solicitada.');
+                }
+
+                setConferencia(encontrada);
+            } catch (err) {
+                setError(err.message || 'No fue posible cargar la conferencia.');
+            } finally {
+                setCargando(false);
+            }
+        };
+
+        cargarDetalle();
+    }, [id]);
+
+    const detalle = useMemo(() => {
+        if (!conferencia) return null;
+        const precioNumero = Number(conferencia?.inscriptionPrice ?? conferencia?.precio ?? 0);
+        const precioFormateado = Number.isFinite(precioNumero) && precioNumero > 0
+            ? `$${precioNumero} USD`
+            : 'Gratis';
+        return {
+            titulo: conferencia?.name || conferencia?.titulo || 'Conferencia sin título',
+            descripcion: conferencia?.description || conferencia?.descripcion || 'Sin descripción disponible.',
+            categoria: conferencia?.category || conferencia?.categoria || 'General',
+            fecha: formatearFecha(conferencia?.startDate || conferencia?.fecha || conferencia?.date),
+            lugar: conferencia?.location || conferencia?.lugar || 'Ubicación por confirmar',
+            imagen: conferencia?.imageUrl || conferencia?.imagen || imagenFallback,
+            precio: precioFormateado,
+            ponente: conferencia?.speakerName || conferencia?.ponente || 'Por confirmar'
+        };
+    }, [conferencia]);
+
+    if (cargando) {
+        return <div className="landing-loading">Cargando detalles de la conferencia...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="landing-error-wrap">
+                <div className="landing-error">{error}</div>
+            </div>
+        );
+    }
 
     return (
-        <div className="bg-white pb-12">
-
-            {/* 1. SECCIÓN HERO (Cabecera Impactante) */}
-            <div className="relative w-full h-[500px] bg-gray-900">
-                {/* Imagen de fondo oscura */}
+        <div className="landing-page">
+            <div className="landing-hero">
                 <img
-                    src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
+                    src={detalle?.imagen}
                     alt="Conferencia Hero"
-                    className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay"
+                    className="landing-hero-img"
                 />
-
-                {/* Contenido del Hero centrado */}
-                <div className="absolute inset-0 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-                    <div className="max-w-3xl">
-            <span className="inline-block py-1 px-3 rounded-full bg-indigo-600 bg-opacity-80 text-sm font-semibold tracking-wider mb-4 border border-indigo-400">
-              Tecnología & Innovación
-            </span>
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4">
-                            DevOps & Microservicios Summit 2026
+                <div className="landing-hero-inner">
+                    <div className="landing-hero-content">
+                        <span className="landing-badge">
+                            {detalle?.categoria}
+                        </span>
+                        <h1 className="landing-hero-title">
+                            {detalle?.titulo}
                         </h1>
-                        <p className="text-xl text-gray-300 mb-8">
-                            Aprende a escalar aplicaciones modernas con los líderes de la industria. Un evento de 3 días lleno de workshops prácticos y networking.
+                        <p className="landing-hero-desc">
+                            {detalle?.descripcion}
                         </p>
-                        <div className="flex flex-wrap gap-4 text-sm font-medium">
-                            <div className="flex items-center bg-gray-800 bg-opacity-50 px-4 py-2 rounded-lg backdrop-blur-sm">
-                                📅 15 al 17 de Mayo, 2026
+                        <div className="landing-meta-row">
+                            <div className="landing-meta-pill">
+                                📅 {detalle?.fecha}
                             </div>
-                            <div className="flex items-center bg-gray-800 bg-opacity-50 px-4 py-2 rounded-lg backdrop-blur-sm">
-                                📍 Ágora Bogotá (Híbrido)
+                            <div className="landing-meta-pill">
+                                📍 {detalle?.lugar}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* 2. CUERPO DE LA PÁGINA (Dos columnas) */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
-                <div className="flex flex-col lg:flex-row gap-8">
-
-                    {/* Columna Izquierda: Detalles y Agenda (70%) */}
-                    <div className="w-full lg:w-2/3 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-
-                        <section className="mb-10">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Acerca del evento</h2>
-                            <p className="text-gray-600 leading-relaxed mb-4">
-                                El Summit anual de DevOps reúne a más de 5,000 profesionales de la tecnología de toda Latinoamérica. Durante este evento exploraremos las últimas tendencias en orquestación de contenedores, arquitecturas serverless y, por supuesto, la evolución de los microservicios.
+            <div className="landing-body-wrap">
+                <div className="landing-columns">
+                    <div className="landing-main">
+                        <section className="landing-section-spaced">
+                            <h2 className="landing-section-title">Acerca del evento</h2>
+                            <p className="landing-text">
+                                {detalle?.descripcion}
                             </p>
-                            <p className="text-gray-600 leading-relaxed">
-                                Nuestros ponentes incluyen ingenieros de empresas Top Tier que compartirán sus casos de éxito y fracaso reales trabajando en producción.
-                            </p>
+                            <p className="landing-text">Ponente principal: {detalle?.ponente}</p>
                         </section>
 
-                        <section>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Agenda Principal</h2>
-
-                            {/* Lista de Agenda Simulada */}
-                            <div className="space-y-6">
-
-                                {/* Item 1 */}
-                                <div className="flex gap-4 border-b border-gray-100 pb-6">
-                                    <div className="w-24 flex-shrink-0 text-sm font-bold text-indigo-600 pt-1">
-                                        09:00 AM
-                                    </div>
+                        <section className="landing-agenda">
+                            <h2 className="landing-section-title">Agenda Principal</h2>
+                            <div>
+                                <div className="landing-agenda-item">
+                                    <div className="landing-agenda-label">Evento</div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-900">Keynote: El estado de los Microservicios</h3>
-                                        <p className="text-sm text-gray-500 mt-1 mb-2">Ing. Sarah Johnson (Tech Lead)</p>
-                                        <p className="text-gray-600 text-sm">Una visión global de cómo las grandes empresas están estructurando sus equipos y código este 2026.</p>
+                                        <h3 className="landing-agenda-title">{detalle?.titulo}</h3>
+                                        <p className="landing-agenda-sub">{detalle?.lugar}</p>
                                     </div>
                                 </div>
-
-                                {/* Item 2 */}
-                                <div className="flex gap-4">
-                                    <div className="w-24 flex-shrink-0 text-sm font-bold text-indigo-600 pt-1">
-                                        11:30 AM
-                                    </div>
+                                <div className="landing-agenda-item">
+                                    <div className="landing-agenda-label">Ponencia</div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-gray-900">Workshop: Migrando de Monolito a React+Vue</h3>
-                                        <p className="text-sm text-gray-500 mt-1 mb-2">Andrés Niño (Frontend Architect)</p>
-                                        <p className="text-gray-600 text-sm">Taller práctico sobre cómo usar Webpack Module Federation para unir aplicaciones en distintos frameworks.</p>
+                                        <h3 className="landing-agenda-title">{detalle?.ponente}</h3>
+                                        <p className="landing-agenda-sub">La agenda detallada se publicará pronto.</p>
                                     </div>
                                 </div>
-
                             </div>
                         </section>
-
                     </div>
 
-                    {/* Columna Derecha: Tarjeta Flotante de Compra (30%) */}
-                    <div className="w-full lg:w-1/3">
-                        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 sticky top-24">
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">Inscripción General</h3>
-                            <p className="text-gray-500 text-sm mb-6">Acceso a los 3 días del evento presencial.</p>
-
-                            <div className="text-4xl font-extrabold text-gray-900 mb-6">
-                                $150 <span className="text-lg text-gray-500 font-normal">USD</span>
-                            </div>
-
-                            <ul className="space-y-3 mb-8 text-sm text-gray-600">
-                                <li className="flex items-center">✓ Acceso a todas las charlas</li>
-                                <li className="flex items-center">✓ Almuerzo y Coffee Breaks</li>
-                                <li className="flex items-center">✓ Certificado de asistencia digital</li>
-                                <li className="flex items-center">✓ Fiesta de Networking</li>
+                    <div className="landing-sidebar">
+                        <div className="landing-sidebar-card">
+                            <h3 className="landing-price-title">Inscripción General</h3>
+                            <p className="landing-price-desc">Acceso a los 3 días del evento presencial.</p>
+                            <div className="landing-price-amount">{detalle?.precio}</div>
+                            <ul className="landing-benefits">
+                                <li>✓ Acceso a todas las charlas</li>
+                                <li>✓ Almuerzo y Coffee Breaks</li>
+                                <li>✓ Certificado de asistencia digital</li>
+                                <li>✓ Fiesta de Networking</li>
                             </ul>
-
-                            <button className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700 transition shadow-md cursor-pointer">
+                            <button type="button" className="landing-btn-primary">
                                 Comprar Entrada
                             </button>
-
-                            <Link to={`/editar-conferencia/${id}`} className='mt-3 block w-full bg-white border border-gray-300 text-gray-700 text-center font-bold py-3 rounded-lg hover:bg-gray-50 transition shadow-sm cursor-pointer'>
+                            <Link to={`/editar-conferencia/${id}`} className="landing-btn-secondary">
                                 Editar Conferencia
                             </Link>
-
-                            <Link to={`/enviar-articulo/${id}`} className='mt-3 block w-full bg-white border border-gray-300 text-gray-700 text-center font-bold py-3 rounded-lg hover:bg-gray-50 transition shadow-sm cursor-pointer'>
+                            <Link to={`/enviar-articulo/${id}`} className="landing-btn-secondary">
                                 Enviar Artículo
                             </Link>
-
-                            <p className="text-xs text-center text-gray-400 mt-4">
+                            <p className="landing-stripe-note">
                                 Ventas seguras procesadas a través de Stripe.
                             </p>
                         </div>
                     </div>
-
                 </div>
             </div>
-
         </div>
     );
 };

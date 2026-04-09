@@ -1,0 +1,149 @@
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+}
+
+.login-card {
+  display: flex;
+  max-width: 56rem;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.login-hero {
+  display: none;
+  width: 50%;
+  background: #4338ca;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .login-hero {
+    display: block;
+  }
+}
+
+.login-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+
+.login-hero-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+  padding: 3rem;
+}
+
+.login-hero-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.login-hero-desc {
+  color: #e0e7ff;
+  margin-top: 0.5rem;
+}
+
+.login-panel {
+  width: 100%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .login-panel {
+    width: 50%;
+    padding: 3rem;
+  }
+}
+
+.login-panel-head {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .login-panel-head {
+    text-align: left;
+  }
+}
+
+.login-panel-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.login-panel-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.login-forgot {
+  font-size: 0.75rem;
+  color: #4f46e5;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.login-forgot:hover {
+  color: #3730a3;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.login-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.login-alert {
+  background: #fee2e2;
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.login-input {
+  padding: 0.625rem 1rem;
+}
