@@ -24,7 +24,7 @@ function App() {
                     <Route path="/crear-conferencia" element={<CrearConferencia />} />
                     <Route path="/editar-conferencia/:id" element={<EditarConferencia />} />
                     <Route path="/enviar-articulo/:conferenciaId" element={<EnviarArticulo />} />
-                    <Route path="/articulo/:id" element={<DetalleArticulo />} />
+                    <Route path="/conferencia/:conferenciaId/articulo/:paperId" element={<DetalleArticulo />} />
                 </Routes>
             </Layout>
         </BrowserRouter>
