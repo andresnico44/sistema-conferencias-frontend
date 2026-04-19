@@ -65,7 +65,7 @@ const EnviarArticulo = () => {
     try {
       const conferenceIdResolved = normalizarIdConferencia(conferenciaId);
       if (conferenceIdResolved == null) {
-        throw new Error('El ID de la conferencia no es válido (se espera UUID).');
+        throw new Error('La conferencia no es válida o no se pudo identificar.');
       }
 
       /** PaperCreateDto — todos string, camelCase */
@@ -82,7 +82,7 @@ const EnviarArticulo = () => {
       const paperCreado = await apiService.crearPaper(conferenceIdResolved, payloadPaper, archivos);
       const paperId = paperCreado?.id ?? paperCreado?.paperId;
       if (!paperId) {
-        throw new Error('El servidor no devolvió el identificador del artículo.');
+        throw new Error('El servidor no confirmó la creación del artículo. Intenta de nuevo.');
       }
 
       setExito(true);
@@ -105,7 +105,7 @@ const EnviarArticulo = () => {
           ← Volver a la conferencia
         </Link>
         <h1 className="enviar-title">Enviar Artículo / Ponencia</h1>
-        <p className="enviar-subtitle">Sube tu propuesta para la conferencia #{conferenciaId}.</p>
+        <p className="enviar-subtitle">Sube tu propuesta para esta conferencia.</p>
       </div>
 
       <div className="enviar-card">
