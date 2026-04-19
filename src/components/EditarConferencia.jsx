@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { apiService } from '../services/api';
 import '../styles/components/editar-conferencia.css';
 
 const EditarConferencia = () => {
@@ -7,55 +8,119 @@ const EditarConferencia = () => {
   const { id } = useParams();
 
   const [formData, setFormData] = useState({
-    titulo: '',
-    descripcion: '',
-    fecha: '',
-    lugar: '',
-    imagen: '',
-    categoria: '',
-    precio: '',
-    ponente: ''
+    name: '',
+    description: '',
+    location: '',
+    virtual: false,
+    inscriptionPrice: '0',
+    startDate: '',
+    endDate: '',
+    submissionDeadline: '',
+    topics: '',
+    speakers: '',
+    state: 'DRAFT'
   });
 
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
+  const [mostrarConfirmacionEliminar, setMostrarConfirmacionEliminar] = useState(false);
   const [exito, setExito] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setFormData({
-        titulo: 'DevOps & Microservicios Summit 2026',
-        descripcion: 'El Summit anual de DevOps reúne a más de 5,000 profesionales de la tecnología de toda Latinoamérica.',
-        fecha: '2026-05-15',
-        lugar: 'Bogotá, Colombia (Híbrido)',
-        imagen: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        categoria: 'Tecnología',
-        precio: '150',
-        ponente: 'Ing. Sarah Johnson'
-      });
-      setCargando(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    const cargarConferencia = async () => {
+      setCargando(true);
+      setError('');
+      try {
+        const conf = await apiService.obtenerConferencia(id);
+        setFormData({
+          name: conf?.name || '',
+          description: conf?.description || '',
+          location: conf?.location || '',
+          virtual: Boolean(conf?.virtual),
+          inscriptionPrice: String(conf?.inscriptionPrice ?? '0'),
+          startDate: (conf?.startDate || '').slice(0, 10),
+          endDate: (conf?.endDate || '').slice(0, 10),
+          submissionDeadline: (conf?.submissionDeadline || '').slice(0, 10),
+          topics: Array.isArray(conf?.topics) ? conf.topics.join(', ') : '',
+          speakers: Array.isArray(conf?.speakers) ? conf.speakers.join(', ') : '',
+          state: conf?.state || 'DRAFT',
+        });
+      } catch (err) {
+        setError(err.message || 'No fue posible cargar la conferencia.');
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargarConferencia();
   }, [id]);
 
   const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: type === 'checkbox' ? checked : value
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (guardando || eliminando) return;
+    setError('');
+    setExito(false);
     setGuardando(true);
-    setTimeout(() => {
-      console.log(`Conferencia ${id} actualizada con:`, formData);
+
+    try {
+      await apiService.editarConferencia(id, {
+        id,
+        name: formData.name,
+        description: formData.description,
+        location: formData.location,
+        virtual: formData.virtual,
+        inscriptionPrice: Number(formData.inscriptionPrice || 0),
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        submissionDeadline: formData.submissionDeadline,
+        topics: formData.topics,
+        speakers: formData.speakers,
+        state: formData.state
+      });
+
       setGuardando(false);
       setExito(true);
       setTimeout(() => {
         navigate(`/conferencia/${id}`);
       }, 2000);
-    }, 1500);
+    } catch (err) {
+      setError(err.message || 'No fue posible actualizar la conferencia.');
+      setGuardando(false);
+    }
+  };
+
+  const abrirConfirmacionEliminar = () => {
+    if (guardando || eliminando) return;
+    setMostrarConfirmacionEliminar(true);
+  };
+
+  const cerrarConfirmacionEliminar = () => {
+    if (eliminando) return;
+    setMostrarConfirmacionEliminar(false);
+  };
+
+  const confirmarEliminar = async () => {
+    if (guardando || eliminando) return;
+
+    setEliminando(true);
+    setError('');
+    try {
+      await apiService.eliminarConferencia(id);
+      navigate('/conferencias');
+    } catch (err) {
+      setError(err.message || 'No fue posible eliminar la conferencia.');
+      setEliminando(false);
+      setMostrarConfirmacionEliminar(false);
+    }
   };
 
   if (cargando) {
@@ -76,12 +141,17 @@ const EditarConferencia = () => {
           <h1 className="editar-title">Editar Conferencia</h1>
           <p className="editar-subtitle">Estás modificando el evento #{id}.</p>
         </div>
-        <button type="button" className="editar-btn-danger">
-          Eliminar Evento
+        <button type="button" className="editar-btn-danger" onClick={abrirConfirmacionEliminar} disabled={guardando || eliminando}>
+          {eliminando ? 'Eliminando...' : 'Eliminar Evento'}
         </button>
       </div>
 
       <div className="editar-card">
+        {error && (
+          <div className="editar-alert-error">
+            <p>{error}</p>
+          </div>
+        )}
         {exito && (
           <div className="editar-alert-success">
             <p>¡Los cambios se han guardado exitosamente!</p>
@@ -90,12 +160,12 @@ const EditarConferencia = () => {
 
         <form onSubmit={handleSubmit} className="editar-form">
           <div>
-            <label className="sf-label" htmlFor="edit-titulo">Título de la Conferencia *</label>
+            <label className="sf-label" htmlFor="edit-name">Nombre *</label>
             <input
-              id="edit-titulo"
+              id="edit-name"
               type="text"
-              name="titulo"
-              value={formData.titulo}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               required
               className="sf-input"
@@ -103,11 +173,11 @@ const EditarConferencia = () => {
           </div>
 
           <div>
-            <label className="sf-label" htmlFor="edit-desc">Descripción corta *</label>
+            <label className="sf-label" htmlFor="edit-desc">Descripción *</label>
             <textarea
               id="edit-desc"
-              name="descripcion"
-              value={formData.descripcion}
+              name="description"
+              value={formData.description}
               onChange={handleChange}
               required
               rows="3"
@@ -117,80 +187,121 @@ const EditarConferencia = () => {
 
           <div className="editar-grid">
             <div>
-              <label className="sf-label" htmlFor="edit-fecha">Fecha del evento *</label>
+              <label className="sf-label" htmlFor="edit-location">Ubicación *</label>
               <input
-                id="edit-fecha"
-                type="date"
-                name="fecha"
-                value={formData.fecha}
-                onChange={handleChange}
-                required
-                className="sf-input"
-              />
-            </div>
-            <div>
-              <label className="sf-label" htmlFor="edit-lugar">Lugar o Modalidad *</label>
-              <input
-                id="edit-lugar"
+                id="edit-location"
                 type="text"
-                name="lugar"
-                value={formData.lugar}
+                name="location"
+                value={formData.location}
                 onChange={handleChange}
                 required
                 className="sf-input"
               />
             </div>
             <div>
-              <label className="sf-label" htmlFor="edit-cat">Categoría *</label>
-              <select
-                id="edit-cat"
-                name="categoria"
-                value={formData.categoria}
+              <label className="sf-label" htmlFor="edit-virtual" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>Virtual *</span>
+                <input
+                  id="edit-virtual"
+                  type="checkbox"
+                  name="virtual"
+                  checked={formData.virtual}
+                  onChange={handleChange}
+                />
+                {formData.virtual ? 'Si' : 'No'}
+              </label>
+            </div>
+            <div>
+              <label className="sf-label" htmlFor="edit-price">Precio de inscripción *</label>
+              <input
+                id="edit-price"
+                type="number"
+                name="inscriptionPrice"
+                value={formData.inscriptionPrice}
                 onChange={handleChange}
+                required
+                step="0.01"
+                className="sf-input"
+              />
+            </div>
+            <div>
+              <label className="sf-label" htmlFor="edit-start-date">Fecha de inicio *</label>
+              <input
+                id="edit-start-date"
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                required
+                className="sf-input"
+              />
+            </div>
+            <div>
+              <label className="sf-label" htmlFor="edit-end-date">Fecha de finalización *</label>
+              <input
+                id="edit-end-date"
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                onChange={handleChange}
+                required
+                className="sf-input"
+              />
+            </div>
+            <div>
+              <label className="sf-label" htmlFor="edit-submission-deadline">Fecha límite de envío *</label>
+              <input
+                id="edit-submission-deadline"
+                type="date"
+                name="submissionDeadline"
+                value={formData.submissionDeadline}
+                onChange={handleChange}
+                required
+                className="sf-input"
+              />
+            </div>
+            <div>
+              <label className="sf-label" htmlFor="edit-topics">Tópicos o temas *</label>
+              <input
+                id="edit-topics"
+                type="text"
+                name="topics"
+                value={formData.topics}
+                onChange={handleChange}
+                required
+                placeholder="Ej. IA, Microservicios, DevOps"
+                className="sf-input"
+              />
+            </div>
+            <div>
+              <label className="sf-label" htmlFor="edit-speakers">Ponente(s) *</label>
+              <input
+                id="edit-speakers"
+                type="text"
+                name="speakers"
+                value={formData.speakers}
+                onChange={handleChange}
+                required
+                placeholder="Ej. Ana Perez, Luis Gomez"
+                className="sf-input"
+              />
+            </div>
+            <div>
+              <label className="sf-label" htmlFor="edit-state">Estado *</label>
+              <select
+                id="edit-state"
+                name="state"
+                value={formData.state}
+                onChange={handleChange}
+                required
                 className="sf-select"
               >
-                <option value="Tecnología">Tecnología</option>
-                <option value="Medicina">Medicina</option>
-                <option value="Finanzas">Finanzas</option>
-                <option value="Diseño">Diseño</option>
-                <option value="Negocios">Negocios</option>
+                <option value="DRAFT">DRAFT</option>
+                <option value="PUBLISHED">PUBLISHED</option>
+                <option value="IN_PROGRESS">IN_PROGRESS</option>
+                <option value="CLOSED">CLOSED</option>
+                <option value="ACTIVE">ACTIVE</option>
               </select>
-            </div>
-            <div>
-              <label className="sf-label" htmlFor="edit-precio">Precio (USD) *</label>
-              <input
-                id="edit-precio"
-                type="number"
-                name="precio"
-                value={formData.precio}
-                onChange={handleChange}
-                required
-                min="0"
-                className="sf-input"
-              />
-            </div>
-            <div>
-              <label className="sf-label" htmlFor="edit-ponente">Ponente Principal *</label>
-              <input
-                id="edit-ponente"
-                type="text"
-                name="ponente"
-                value={formData.ponente}
-                onChange={handleChange}
-                required
-                className="sf-input"
-              />
-            </div>
-            <div>
-              <label className="sf-label" htmlFor="edit-img">URL de la Imagen (Portada)</label>
-              <input
-                id="edit-img"
-                type="url"
-                name="imagen"
-                value={formData.imagen}
-                onChange={handleChange}
-                className="sf-input"
-              />
             </div>
           </div>
 
@@ -204,6 +315,35 @@ const EditarConferencia = () => {
           </div>
         </form>
       </div>
+
+      {mostrarConfirmacionEliminar && (
+        <div className="editar-modal-overlay" onClick={cerrarConfirmacionEliminar}>
+          <div className="editar-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="editar-modal-title">Eliminar conferencia</h3>
+            <p className="editar-modal-text">
+              Esta acción eliminará la conferencia de forma permanente. ¿Seguro que deseas continuar?
+            </p>
+            <div className="editar-modal-actions">
+              <button
+                type="button"
+                className="editar-modal-btn editar-modal-btn-cancel"
+                onClick={cerrarConfirmacionEliminar}
+                disabled={eliminando}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="editar-modal-btn editar-modal-btn-danger"
+                onClick={confirmarEliminar}
+                disabled={eliminando}
+              >
+                {eliminando ? 'Eliminando...' : 'Sí, eliminar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

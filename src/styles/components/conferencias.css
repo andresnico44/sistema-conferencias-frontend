@@ -244,8 +244,33 @@
 .conferencias-card-place {
   color: #4b5563;
   font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.conferencias-card-mode {
+  display: block;
   margin-bottom: 1rem;
-  flex: 1;
+}
+
+.conferencias-card-mode-pill {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid transparent;
+}
+
+.conferencias-card-mode-pill--virtual {
+  color: #6d28d9;
+  background: #f3e8ff;
+  border-color: #ddd6fe;
+}
+
+.conferencias-card-mode-pill--presencial {
+  color: #1d4ed8;
+  background: #dbeafe;
+  border-color: #bfdbfe;
 }
 
 .conferencias-card-footer {

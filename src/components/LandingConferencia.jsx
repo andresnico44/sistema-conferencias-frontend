@@ -12,7 +12,13 @@ const LandingConferencia = () => {
 
     const formatearFecha = (fecha) => {
         if (!fecha) return 'Fecha por confirmar';
-        return new Date(fecha).toLocaleDateString('es-CO', {
+        const valor = String(fecha);
+        const soloFecha = /^(\d{4})-(\d{2})-(\d{2})/.exec(valor);
+        const fechaNormalizada = soloFecha
+            ? new Date(Number(soloFecha[1]), Number(soloFecha[2]) - 1, Number(soloFecha[3]))
+            : new Date(valor);
+        if (Number.isNaN(fechaNormalizada.getTime())) return 'Fecha por confirmar';
+        return fechaNormalizada.toLocaleDateString('es-CO', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -24,15 +30,8 @@ const LandingConferencia = () => {
             setCargando(true);
             setError('');
             try {
-                const respuesta = await apiService.obtenerConferencias();
-                const listado = Array.isArray(respuesta) ? respuesta : (respuesta?.data || respuesta?.content || []);
-                const encontrada = listado.find((item) => String(item?.id || item?.conferenceId) === String(id));
-
-                if (!encontrada) {
-                    throw new Error('No se encontró la conferencia solicitada.');
-                }
-
-                setConferencia(encontrada);
+                const respuesta = await apiService.obtenerConferencia(id);
+                setConferencia(respuesta);
             } catch (err) {
                 setError(err.message || 'No fue posible cargar la conferencia.');
             } finally {
@@ -49,15 +48,25 @@ const LandingConferencia = () => {
         const precioFormateado = Number.isFinite(precioNumero) && precioNumero > 0
             ? `$${precioNumero} USD`
             : 'Gratis';
+        const speakers = Array.isArray(conferencia?.speakers)
+            ? conferencia.speakers
+            : (conferencia?.speakerName ? [conferencia.speakerName] : []);
+        const topics = Array.isArray(conferencia?.topics)
+            ? conferencia.topics
+            : (conferencia?.topic ? [conferencia.topic] : []);
         return {
             titulo: conferencia?.name || conferencia?.titulo || 'Conferencia sin título',
             descripcion: conferencia?.description || conferencia?.descripcion || 'Sin descripción disponible.',
             categoria: conferencia?.category || conferencia?.categoria || 'General',
-            fecha: formatearFecha(conferencia?.startDate || conferencia?.fecha || conferencia?.date),
+            fechaInicio: formatearFecha(conferencia?.startDate || conferencia?.fecha || conferencia?.date),
+            fechaFin: formatearFecha(conferencia?.endDate),
+            fechaEntregaArticulos: formatearFecha(conferencia?.submissionDeadline),
             lugar: conferencia?.location || conferencia?.lugar || 'Ubicación por confirmar',
+            modalidad: Boolean(conferencia?.virtual) ? 'Virtual' : 'Presencial',
             imagen: conferencia?.imageUrl || conferencia?.imagen || imagenFallback,
             precio: precioFormateado,
-            ponente: conferencia?.speakerName || conferencia?.ponente || 'Por confirmar'
+            speakers,
+            topics
         };
     }, [conferencia]);
 
@@ -94,10 +103,13 @@ const LandingConferencia = () => {
                         </p>
                         <div className="landing-meta-row">
                             <div className="landing-meta-pill">
-                                📅 {detalle?.fecha}
+                                📅 Inicio: {detalle?.fechaInicio}
                             </div>
                             <div className="landing-meta-pill">
                                 📍 {detalle?.lugar}
+                            </div>
+                            <div className="landing-meta-pill">
+                                🖥️ {detalle?.modalidad}
                             </div>
                         </div>
                     </div>
@@ -112,24 +124,36 @@ const LandingConferencia = () => {
                             <p className="landing-text">
                                 {detalle?.descripcion}
                             </p>
-                            <p className="landing-text">Ponente principal: {detalle?.ponente}</p>
+                            <p className="landing-text">
+                                <strong>Ponentes:</strong> {detalle?.speakers?.length ? detalle.speakers.join(', ') : 'Por confirmar'}
+                            </p>
+                            <p className="landing-text">
+                                <strong>Tópicos:</strong> {detalle?.topics?.length ? detalle.topics.join(', ') : 'Por confirmar'}
+                            </p>
                         </section>
 
                         <section className="landing-agenda">
-                            <h2 className="landing-section-title">Agenda Principal</h2>
+                            <h2 className="landing-section-title">Fechas del evento</h2>
                             <div>
                                 <div className="landing-agenda-item">
-                                    <div className="landing-agenda-label">Evento</div>
+                                    <div className="landing-agenda-label">Inicio</div>
                                     <div>
-                                        <h3 className="landing-agenda-title">{detalle?.titulo}</h3>
-                                        <p className="landing-agenda-sub">{detalle?.lugar}</p>
+                                        <h3 className="landing-agenda-title">{detalle?.fechaInicio}</h3>
+                                        <p className="landing-agenda-sub">Fecha de inicio reportada por el backend.</p>
                                     </div>
                                 </div>
                                 <div className="landing-agenda-item">
-                                    <div className="landing-agenda-label">Ponencia</div>
+                                    <div className="landing-agenda-label">Fin</div>
                                     <div>
-                                        <h3 className="landing-agenda-title">{detalle?.ponente}</h3>
-                                        <p className="landing-agenda-sub">La agenda detallada se publicará pronto.</p>
+                                        <h3 className="landing-agenda-title">{detalle?.fechaFin}</h3>
+                                        <p className="landing-agenda-sub">Fecha de finalización del evento.</p>
+                                    </div>
+                                </div>
+                                <div className="landing-agenda-item">
+                                    <div className="landing-agenda-label">Entrega</div>
+                                    <div>
+                                        <h3 className="landing-agenda-title">{detalle?.fechaEntregaArticulos}</h3>
+                                        <p className="landing-agenda-sub">Fecha límite de envío de artículos.</p>
                                     </div>
                                 </div>
                             </div>
@@ -139,7 +163,11 @@ const LandingConferencia = () => {
                     <div className="landing-sidebar">
                         <div className="landing-sidebar-card">
                             <h3 className="landing-price-title">Inscripción General</h3>
-                            <p className="landing-price-desc">Acceso a los 3 días del evento presencial.</p>
+                            <p className="landing-price-desc">
+                                {detalle?.modalidad === 'Virtual'
+                                    ? 'Acceso completo al evento en modalidad virtual.'
+                                    : 'Acceso a los 3 días del evento presencial.'}
+                            </p>
                             <div className="landing-price-amount">{detalle?.precio}</div>
                             <ul className="landing-benefits">
                                 <li>✓ Acceso a todas las charlas</li>
