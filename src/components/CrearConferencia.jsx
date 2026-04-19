@@ -15,9 +15,9 @@ const CrearConferencia = () => {
     startDate: '',
     endDate: '',
     submissionDeadline: '',
+    topics: '',
+    speakers: '',
     state: 'PUBLISHED',
-    categoria: 'Tecnología',
-    ponentes: ''
   });
 
   const [cargando, setCargando] = useState(false);
@@ -39,8 +39,13 @@ const CrearConferencia = () => {
       setError('La fecha de finalización no puede ser menor que la fecha de inicio.');
       return;
     }
-    if (formData.submissionDeadline && formData.startDate && formData.submissionDeadline > formData.startDate) {
-      setError('La fecha límite de envío no puede ser posterior al inicio del evento.');
+    if (
+      formData.submissionDeadline &&
+      formData.startDate &&
+      formData.endDate &&
+      (formData.submissionDeadline < formData.startDate || formData.submissionDeadline > formData.endDate)
+    ) {
+      setError('La fecha límite de envío debe estar dentro del rango entre la fecha de inicio y finalización.');
       return;
     }
 
@@ -58,6 +63,8 @@ const CrearConferencia = () => {
         startDate: formData.startDate,
         endDate: formData.endDate,
         submissionDeadline: formData.submissionDeadline,
+        topics: formData.topics,
+        speakers: formData.speakers,
         state: formData.state
       });
       setExito(true);
@@ -132,7 +139,16 @@ const CrearConferencia = () => {
 
             <div className="crear-conferencia-field">
               <label>Fecha límite de envío *</label>
-              <input type="date" name="submissionDeadline" value={formData.submissionDeadline} onChange={handleChange} required max={formData.startDate || undefined} className="crear-conferencia-input" />
+              <input
+                type="date"
+                name="submissionDeadline"
+                value={formData.submissionDeadline}
+                onChange={handleChange}
+                required
+                min={formData.startDate || undefined}
+                max={formData.endDate || undefined}
+                className="crear-conferencia-input"
+              />
             </div>
 
             <div className="crear-conferencia-field">
@@ -142,23 +158,19 @@ const CrearConferencia = () => {
                 <option value="PUBLISHED">PUBLISHED</option>
                 <option value="IN_PROGRESS">IN_PROGRESS</option>
                 <option value="CLOSED">CLOSED</option>
+                <option value="ACTIVE">ACTIVE</option>
               </select>
             </div>
 
             <div className="crear-conferencia-field">
-              <label>Categoría *</label>
-              <select name="categoria" value={formData.categoria} onChange={handleChange} className="crear-conferencia-select">
-                <option value="Tecnología">Tecnología</option>
-                <option value="Medicina">Medicina</option>
-                <option value="Finanzas">Finanzas</option>
-                <option value="Diseño">Diseño</option>
-                <option value="Negocios">Negocios</option>
-              </select>
+              <label>Tópicos o temas *</label>
+              <input type="text" name="topics" value={formData.topics} onChange={handleChange} required placeholder="Ej. IA, Microservicios, DevOps" className="crear-conferencia-input" />
+              <p className="crear-conferencia-field-help">Agrega uno o varios, separados por coma.</p>
             </div>
 
             <div className="crear-conferencia-field">
-              <label>Ponentes *</label>
-              <input type="text" name="ponentes" value={formData.ponentes} onChange={handleChange} required placeholder="Ej. Dra. Ana Perez, Ing. Carlos Ruiz" className="crear-conferencia-input" />
+              <label>Ponente(s) *</label>
+              <input type="text" name="speakers" value={formData.speakers} onChange={handleChange} required placeholder="Ej. Ana Perez, Luis Gomez" className="crear-conferencia-input" />
               <p className="crear-conferencia-field-help">Puedes agregar varios separados por coma.</p>
             </div>
 

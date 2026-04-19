@@ -1,6 +1,10 @@
-const AUTH_URL = 'https://auth-microservice-project-backend.onrender.com/api/v1/auth';
-const CONF_URL = 'https://conference-microservice-project-backend.onrender.com/conferences';
-const PAPER_URL = 'https://paper-microservice-project-backend.onrender.com';
+const API_GATEWAY_URL =
+  import.meta.env.VITE_API_GATEWAY_URL ||
+  import.meta.env.API_GATEWAY_URL;
+const AUTH_URL = `${API_GATEWAY_URL}/api/v1/auth`;
+const CONF_URL = `${API_GATEWAY_URL}/conferences`;
+const PAPER_URL = `${API_GATEWAY_URL}/papers`;
+const FILE_URL = `${API_GATEWAY_URL}/files`;
 
 const getToken = () => localStorage.getItem('accessToken');
 
@@ -22,7 +26,7 @@ const getPaperHeaders = (isJson = true) => {
 };
 
 const papersBase = (conferenceId) =>
-  `${PAPER_URL}/conferences/${encodeURIComponent(conferenceId)}/papers`;
+  `${PAPER_URL}/conference/${encodeURIComponent(conferenceId)}`;
 
 const resolveFilenameFromDisposition = (disposition, fallback) => {
   const utfMatch = /filename\*=UTF-8''([^;\s]+)/i.exec(disposition || '');
@@ -66,6 +70,19 @@ const parseError = async (response, fallbackMessage) => {
   } catch {
     return `${fallbackMessage} (HTTP ${response.status})`;
   }
+};
+
+const normalizeStringList = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => String(item).trim())
+      .filter(Boolean);
+  }
+  if (typeof value !== 'string') return [];
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
 };
 
 export const apiService = {
@@ -133,6 +150,8 @@ export const apiService = {
       startDate: datos.startDate,
       endDate: datos.endDate,
       submissionDeadline: datos.submissionDeadline,
+      topics: normalizeStringList(datos.topics),
+      speakers: normalizeStringList(datos.speakers),
       state: datos.state
     };
 
@@ -146,8 +165,55 @@ export const apiService = {
     return response.json();
   },
 
+  obtenerConferencia: async (id) => {
+    const response = await fetch(`${CONF_URL}/get/${encodeURIComponent(id)}`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) throw new Error(await parseError(response, 'Error al obtener la conferencia'));
+    return response.json();
+  },
+
+  editarConferencia: async (id, datos) => {
+    const bodyBackend = {
+      id: datos.id ?? id,
+      name: datos.name,
+      description: datos.description,
+      location: datos.location,
+      virtual: Boolean(datos.virtual),
+      inscriptionPrice: Number(datos.inscriptionPrice),
+      startDate: datos.startDate,
+      endDate: datos.endDate,
+      submissionDeadline: datos.submissionDeadline,
+      topics: normalizeStringList(datos.topics),
+      speakers: normalizeStringList(datos.speakers),
+      state: datos.state
+    };
+
+    const response = await fetch(`${CONF_URL}/edit/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(bodyBackend),
+    });
+
+    if (!response.ok) throw new Error(await parseError(response, 'Error al editar conferencia'));
+    return response.json();
+  },
+
+  eliminarConferencia: async (id) => {
+    const response = await fetch(`${CONF_URL}/delete/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) throw new Error(await parseError(response, 'Error al eliminar conferencia'));
+    if (response.status === 204) return { ok: true };
+    return response.json().catch(() => ({ ok: true }));
+  },
+
   /**
-   * POST /conferences/{conferenceId}/papers
+   * POST /papers/conference/{conferenceId}/create
    * multipart/form-data: parte "paper" = JSON (PaperCreateDto), partes "files" = adjuntos iniciales (opcional).
    */
   crearPaper: async (conferenceId, paperDto, archivosIniciales = []) => {
@@ -160,7 +226,7 @@ export const apiService = {
       formData.append('files', file, file.name);
     }
 
-    const response = await fetch(`${papersBase(conferenceId)}`, {
+    const response = await fetch(`${papersBase(conferenceId)}/create`, {
       method: 'POST',
       body: formData,
     });
@@ -169,9 +235,9 @@ export const apiService = {
     return response.json();
   },
 
-  /** GET /conferences/{conferenceId}/papers/evaluation-tray */
+  /** GET /papers/conference/{conferenceId}/evaluations-tray */
   obtenerBandejaEvaluacion: async (conferenceId) => {
-    const response = await fetch(`${papersBase(conferenceId)}/evaluation-tray`, {
+    const response = await fetch(`${papersBase(conferenceId)}/evaluations-tray`, {
       method: 'GET',
       headers: getPaperHeaders()
     });
@@ -180,10 +246,10 @@ export const apiService = {
     return response.json();
   },
 
-  /** GET /conferences/{conferenceId}/papers (?status=) */
+  /** GET /papers/conference/{conferenceId}/list (?status=) */
   obtenerPapers: async (conferenceId, status) => {
     const query = status ? `?status=${encodeURIComponent(status)}` : '';
-    const response = await fetch(`${papersBase(conferenceId)}${query}`, {
+    const response = await fetch(`${papersBase(conferenceId)}/list${query}`, {
       method: 'GET',
       headers: getPaperHeaders()
     });
@@ -192,7 +258,7 @@ export const apiService = {
     return response.json();
   },
 
-  /** GET /conferences/{conferenceId}/papers/{paperId} */
+  /** GET /papers/conference/{conferenceId}/{paperId} */
   obtenerPaper: async (conferenceId, paperId) => {
     const response = await fetch(`${papersBase(conferenceId)}/${encodeURIComponent(paperId)}`, {
       method: 'GET',
@@ -203,10 +269,10 @@ export const apiService = {
     return response.json();
   },
 
-  /** PATCH /conferences/{conferenceId}/papers/{paperId}/evaluation */
+  /** PATCH /papers/conference/{conferenceId}/{paperId}/evaluations */
   evaluarPaper: async (conferenceId, paperId, evaluacion) => {
     const response = await fetch(
-      `${papersBase(conferenceId)}/${encodeURIComponent(paperId)}/evaluation`,
+      `${papersBase(conferenceId)}/${encodeURIComponent(paperId)}/evaluations`,
       {
         method: 'PATCH',
         headers: getPaperHeaders(),
@@ -218,10 +284,7 @@ export const apiService = {
     return response.json();
   },
 
-  /**
-   * POST /conferences/{conferenceId}/papers/{paperId}/documents
-   * multipart: varias partes "files" (lista de archivos en Spring).
-   */
+  /** POST /papers/conference/{conferenceId}/{paperId}/attachments */
   subirAdjuntosPaper: async (conferenceId, paperId, files) => {
     if (!conferenceId || !paperId) {
       throw new Error('conferenceId y paperId son obligatorios.');
@@ -236,7 +299,7 @@ export const apiService = {
     }
 
     const response = await fetch(
-      `${papersBase(conferenceId)}/${encodeURIComponent(paperId)}/documents`,
+      `${papersBase(conferenceId)}/${encodeURIComponent(paperId)}/attachments`,
       {
         method: 'POST',
         headers: getPaperHeaders(false),
@@ -248,16 +311,13 @@ export const apiService = {
     return response.json().catch(() => ({}));
   },
 
-  /**
-   * GET /conferences/{conferenceId}/papers/{paperId}/documents/{attachmentId}
-   * Nombre por defecto en servidor: "adjunto".
-   */
+  /** GET /papers/conference/{conferenceId}/{paperId}/attachments/{attachmentId} */
   descargarAdjuntoPaperBlob: async (conferenceId, paperId, attachmentId, nombreSugerido) => {
     if (!conferenceId || !paperId || !attachmentId) {
       throw new Error('conferenceId, paperId y attachmentId son obligatorios.');
     }
     const response = await fetch(
-      `${papersBase(conferenceId)}/${encodeURIComponent(paperId)}/documents/${encodeURIComponent(attachmentId)}`,
+      `${papersBase(conferenceId)}/${encodeURIComponent(paperId)}/attachments/${encodeURIComponent(attachmentId)}`,
       {
         method: 'GET',
         headers: getPaperHeaders(false),
@@ -273,7 +333,7 @@ export const apiService = {
     return { blob, filename };
   },
 
-  /** POST /conferences/{conferenceId}/files (multipart, campo file) */
+  /** POST /files/upload/{conferenceId} (multipart, campo file) */
   subirArchivoConferencia: async (conferenceId, file) => {
     if (!conferenceId) {
       throw new Error('conferenceId es obligatorio para subir archivos.');
@@ -285,7 +345,7 @@ export const apiService = {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    const response = await fetch(`${PAPER_URL}/conferences/${encodeURIComponent(conferenceId)}/files`, {
+    const response = await fetch(`${FILE_URL}/upload/${encodeURIComponent(conferenceId)}`, {
       method: 'POST',
       headers: getPaperHeaders(false),
       body: formData,
@@ -296,7 +356,7 @@ export const apiService = {
   },
 
   listarArchivosConferencia: async (conferenceId) => {
-    const response = await fetch(`${PAPER_URL}/conferences/${encodeURIComponent(conferenceId)}/files`, {
+    const response = await fetch(`${FILE_URL}/list/${encodeURIComponent(conferenceId)}`, {
       method: 'GET',
       headers: getPaperHeaders()
     });
@@ -305,15 +365,13 @@ export const apiService = {
     return response.json();
   },
 
-  /**
-   * GET /conferences/{conferenceId}/files/{fileId}
-   */
+  /** GET /files/{conferenceId}/download/{fileId} */
   descargarArchivoConferenciaBlob: async (conferenceId, fileId, nombreSugerido) => {
     if (!conferenceId || !fileId) {
       throw new Error('conferenceId y fileId son obligatorios para descargar el archivo.');
     }
     const response = await fetch(
-      `${PAPER_URL}/conferences/${encodeURIComponent(conferenceId)}/files/${encodeURIComponent(fileId)}`,
+      `${FILE_URL}/${encodeURIComponent(conferenceId)}/download/${encodeURIComponent(fileId)}`,
       {
         method: 'GET',
         headers: getPaperHeaders(false),
@@ -330,7 +388,7 @@ export const apiService = {
   },
 
   eliminarArchivoConferencia: async (fileId) => {
-    const response = await fetch(`${PAPER_URL}/conferences/files/${encodeURIComponent(fileId)}`, {
+    const response = await fetch(`${FILE_URL}/delete/${encodeURIComponent(fileId)}`, {
       method: 'DELETE',
       headers: getPaperHeaders()
     });

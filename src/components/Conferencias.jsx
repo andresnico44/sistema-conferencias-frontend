@@ -10,16 +10,25 @@ const Conferencias = () => {
     const [eventosFiltrados, setEventosFiltrados] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
+    const formatearFecha = (fecha) => {
+        if (!fecha) return 'Fecha por confirmar';
+        const valor = String(fecha);
+        const soloFecha = /^(\d{4})-(\d{2})-(\d{2})/.exec(valor);
+        const fechaNormalizada = soloFecha
+            ? new Date(Number(soloFecha[1]), Number(soloFecha[2]) - 1, Number(soloFecha[3]))
+            : new Date(valor);
+
+        if (Number.isNaN(fechaNormalizada.getTime())) return 'Fecha por confirmar';
+        return fechaNormalizada.toLocaleDateString('es-CO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
 
     const mapearConferencia = (conferencia) => {
         const fechaRaw = conferencia?.startDate || conferencia?.fecha || conferencia?.date;
-        const fechaFormateada = fechaRaw
-            ? new Date(fechaRaw).toLocaleDateString('es-CO', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            })
-            : 'Fecha por confirmar';
+        const fechaFormateada = formatearFecha(fechaRaw);
 
         const precioNumero = Number(conferencia?.inscriptionPrice ?? conferencia?.precio ?? 0);
         const precioFormateado = Number.isFinite(precioNumero) && precioNumero > 0
@@ -36,7 +45,11 @@ const Conferencias = () => {
             imagen: conferencia?.imageUrl || conferencia?.imagen || imagenFallback,
             categoria: conferencia?.category || conferencia?.categoria || 'General',
             precio: precioFormateado,
-            ponente: conferencia?.speakerName || conferencia?.ponente || 'Por confirmar'
+            modalidad: Boolean(conferencia?.virtual) ? 'Virtual' : 'Presencial',
+            modalidadClase: Boolean(conferencia?.virtual) ? 'virtual' : 'presencial',
+            ponentes: Array.isArray(conferencia?.speakers)
+                ? conferencia.speakers
+                : (conferencia?.speakerName ? [conferencia.speakerName] : [])
         };
     };
 
@@ -177,11 +190,18 @@ const Conferencias = () => {
                                     <p className="conferencias-card-place">
                                         📍 {evento.lugar}
                                     </p>
+                                    <p className="conferencias-card-mode">
+                                        <span className={`conferencias-card-mode-pill conferencias-card-mode-pill--${evento.modalidadClase}`}>
+                                            {evento.modalidad}
+                                        </span>
+                                    </p>
 
                                     <div className="conferencias-card-footer">
                                         <div>
-                                            <span className="conferencias-card-speaker-label">Ponente:</span>
-                                            <span className="conferencias-card-speaker">{evento.ponente}</span>
+                                            <span className="conferencias-card-speaker-label">Ponentes:</span>
+                                            <span className="conferencias-card-speaker">
+                                                {evento.ponentes.length ? evento.ponentes.join(', ') : 'Por confirmar'}
+                                            </span>
                                         </div>
 
                                         {evento.id ? (
