@@ -209,7 +209,7 @@ const Conferencias = () => {
                                                 Ver detalles →
                                             </Link>
                                         ) : (
-                                            <span className="conferencias-card-no-id">Sin identificador</span>
+                                            <span className="conferencias-card-no-id">Detalle no disponible</span>
                                         )}
                                     </div>
                                 </div>

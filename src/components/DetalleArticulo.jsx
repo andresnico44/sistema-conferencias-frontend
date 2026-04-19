@@ -235,7 +235,8 @@ const DetalleArticulo = () => {
   const autoresTexto = typeof articulo.authors === 'string'
     ? articulo.authors
     : (Array.isArray(articulo.authors) ? articulo.authors.join('; ') : 'Sin autores');
-  const cidDisplay = articulo.conferenceId ?? conferenciaId;
+  const nombreConferencia =
+    articulo.conferenceName ?? articulo.conference?.name ?? articulo.eventName ?? null;
   const abstractTexto = articulo.abstractText ?? articulo.abstract ?? '';
 
   return (
@@ -253,15 +254,16 @@ const DetalleArticulo = () => {
         <div className="detalle-header">
           <div>
             <div className="detalle-header-meta">
-              <span className="detalle-id-label">Artículo {articulo.id}</span>
               <span className={getEstadoClass(estadoActual)} title={estadoActual}>
                 {STATUS_LABELS[estadoActual] || estadoActual}
               </span>
             </div>
             <h1 className="detalle-title">{articulo.title || 'Sin título'}</h1>
-            <p className="detalle-conference">
-              Conferencia: <span>{cidDisplay || '—'}</span>
-            </p>
+            {nombreConferencia && (
+              <p className="detalle-conference">
+                Conferencia: <span>{nombreConferencia}</span>
+              </p>
+            )}
           </div>
         </div>
 
@@ -348,23 +350,45 @@ const DetalleArticulo = () => {
             )}
 
             <form onSubmit={handleSubirMasAdjuntos} className="detalle-adjuntos-upload">
-              <label className="sf-label" htmlFor="detalle-adjuntos-extra">Añadir adjuntos</label>
-              <div className="detalle-adjuntos-upload-row">
-                <input
-                  id="detalle-adjuntos-extra"
-                  type="file"
-                  multiple
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleArchivosSubirChange}
-                  className="detalle-adjuntos-input"
-                />
-                <button
-                  type="submit"
-                  disabled={subiendoAdjuntos || !archivosSubir.length}
-                  className="detalle-file-btn detalle-file-btn--secondary"
-                >
-                  {subiendoAdjuntos ? 'Subiendo…' : 'Subir archivos'}
-                </button>
+              <p className="sf-label detalle-adjuntos-section-title">Añadir adjuntos</p>
+              <div className="detalle-adjuntos-upload-inner">
+                <label className="detalle-adjuntos-dropzone" htmlFor="detalle-adjuntos-extra">
+                  <input
+                    id="detalle-adjuntos-extra"
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleArchivosSubirChange}
+                    className="detalle-adjuntos-file-input"
+                  />
+                  <div className="detalle-adjuntos-dropzone-inner">
+                    <svg className="detalle-adjuntos-upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p className="detalle-adjuntos-dropzone-hint">
+                      <strong>Haz clic para elegir</strong> uno o varios archivos
+                    </p>
+                    <p className="detalle-adjuntos-dropzone-note">PDF, Word</p>
+                  </div>
+                </label>
+                <div className="detalle-adjuntos-actions">
+                  {archivosSubir.length > 0 ? (
+                    <ul className="detalle-adjuntos-file-list">
+                      {archivosSubir.map((f) => (
+                        <li key={`${f.name}-${f.size}`}>{f.name}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="detalle-adjuntos-empty-hint">Aún no has seleccionado archivos.</p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={subiendoAdjuntos || !archivosSubir.length}
+                    className="detalle-adjuntos-submit"
+                  >
+                    {subiendoAdjuntos ? 'Subiendo…' : 'Subir archivos'}
+                  </button>
+                </div>
               </div>
               <p className="detalle-section-hint detalle-section-hint--tight">
                 Puedes añadir más archivos en cualquier momento.

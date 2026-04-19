@@ -139,7 +139,7 @@ const EditarConferencia = () => {
             ← Volver a los detalles
           </Link>
           <h1 className="editar-title">Editar Conferencia</h1>
-          <p className="editar-subtitle">Estás modificando el evento #{id}.</p>
+          <p className="editar-subtitle">Modifica los datos de la conferencia y guarda los cambios.</p>
         </div>
         <button type="button" className="editar-btn-danger" onClick={abrirConfirmacionEliminar} disabled={guardando || eliminando}>
           {eliminando ? 'Eliminando...' : 'Eliminar Evento'}
